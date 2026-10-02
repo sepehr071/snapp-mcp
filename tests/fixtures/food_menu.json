@@ -1,0 +1,100 @@
+{
+ "status": true,
+ "data": {
+  "vendor": {
+   "vendorCode": "947evd",
+   "title": "پیتزا وای فای (سرباز)",
+   "rating": 9.445035860884174,
+   "commentCount": 3275,
+   "minOrder": 699000,
+   "deliveryFee": 25000,
+   "isOpenNow": true
+  },
+  "menus": [
+   {
+    "categoryId": -1,
+    "category": "پرطرفدارها",
+    "products": [
+     {
+      "id": 26639907,
+      "title": "پیتزا استاف کراست اسپشیال آمریکایی یک نفره (23 سانتی متری)",
+      "price": 1398000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پرطرفدارها",
+      "disabledUntil": false
+     },
+     {
+      "id": 26639915,
+      "title": "پیتزا فیلتو ایتالیایی یک نفره (32 سانتی متری)",
+      "price": 1428000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پرطرفدارها",
+      "disabledUntil": false
+     }
+    ]
+   },
+   {
+    "categoryId": 2586010,
+    "category": "پیتزا رژیمی",
+    "products": [
+     {
+      "id": 34224007,
+      "title": "پیتزا رژیمی استیک گوشت",
+      "price": 1248000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پیتزا رژیمی",
+      "disabledUntil": false
+     },
+     {
+      "id": 34224063,
+      "title": "پیتزا رژیمی فیله گوشت",
+      "price": 1238000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پیتزا رژیمی",
+      "disabledUntil": false
+     }
+    ]
+   },
+   {
+    "categoryId": 1773551,
+    "category": "پیتزا ایتالیایی",
+    "products": [
+     {
+      "id": 37431096,
+      "title": "پیتزا پستو ایتالیایی یک نفره (32 سانتی متری)",
+      "price": 1208000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پیتزا ایتالیایی",
+      "disabledUntil": false
+     },
+     {
+      "id": 26639918,
+      "title": "پیتزا میت لاور ایتالیایی یک نفره (32 سانتی متری)",
+      "price": 1538000,
+      "discount": 0,
+      "discountRatio": 0,
+      "containerPrice": 0,
+      "stock": null,
+      "categoryTitle": "پیتزا ایتالیایی",
+      "disabledUntil": false
+     }
+    ]
+   }
+  ]
+ }
+}

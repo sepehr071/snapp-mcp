@@ -1,0 +1,20 @@
+[
+ {
+  "status": true,
+  "data": [
+   {
+    "name": "گالری کریمی",
+    "type": "poi"
+   },
+   {
+    "name": "حائری قبل از وصال شیرازی شمالی",
+    "type": "secondary"
+   },
+   {
+    "name": "محله زند",
+    "type": "neighbourhood"
+   }
+  ],
+  "message": "success"
+ }
+]

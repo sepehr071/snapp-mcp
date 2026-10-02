@@ -1,0 +1,41 @@
+{
+ "data": {
+  "result": [
+   {
+    "vendorCode": "6d2wow",
+    "title": "اغذیه آبی بی (فلکه گاز)",
+    "isOpen": true,
+    "minOrder": 600000,
+    "deliveryFee": 35000,
+    "isDeliveryFeeHasDiscount": false,
+    "deliveryFeeAfterDiscount": 0,
+    "rating": 9.321534100798107,
+    "badge_list": [
+     {
+      "type": "gem",
+      "text": "%20 تخفیف شکار"
+     }
+    ]
+   },
+   {
+    "vendorCode": "94yxwy",
+    "title": "فست فود ساویچ",
+    "isOpen": true,
+    "minOrder": 300000,
+    "deliveryFee": 80000,
+    "isDeliveryFeeHasDiscount": false,
+    "deliveryFeeAfterDiscount": 0,
+    "rating": 8.733128347261156,
+    "badge_list": [
+     {
+      "type": "gem",
+      "text": "%20 تخفیف شکار"
+     }
+    ]
+   }
+  ],
+  "total": 32,
+  "expire_date": "2026-10-02T23:30:00+03:30"
+ },
+ "status": true
+}

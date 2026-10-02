@@ -1,0 +1,31 @@
+{
+ "status": true,
+ "data": {
+  "cities": [
+   {
+    "id": 1,
+    "code": "Tehran",
+    "title": "تهران",
+    "latitude": 35.691156,
+    "longitude": 51.399248,
+    "rank": 1
+   },
+   {
+    "id": 5,
+    "code": "Mashhad",
+    "title": "مشهد",
+    "latitude": 36.28691,
+    "longitude": 59.54392,
+    "rank": 2
+   },
+   {
+    "id": 4,
+    "code": "Karaj",
+    "title": "کرج",
+    "latitude": 35.84272,
+    "longitude": 50.97715,
+    "rank": 3
+   }
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "code": 200,
+ "status": true,
+ "data": {
+  "details": {
+   "id": 4076320,
+   "document_id": "4076320-72395",
+   "title": "لازانیا سریع پخت مانا 450 گرمی",
+   "brandId": 196,
+   "brandTitle": "مانا",
+   "capacity": null,
+   "categoryId": 731207,
+   "categoryTitle": "خواربار و نان",
+   "categorySlug": "groceries-bread",
+   "subcategoryId": 731245,
+   "subcategoryTitle": "ماکارونی و لازانیا و رشته",
+   "subcategorySlug": "pasta-spaghetti",
+   "vendorId": 72395,
+   "discount": 0.0,
+   "discountRatio": null,
+   "price": 159000,
+   "description": "",
+   "sub_vendor_id": null,
+   "isBrandPro": false,
+   "brandSlug": null,
+   "badges": [
+    {
+     "name": "کالابرگ",
+     "description": "این کالا مشمول کالابرگ الکترونیکی می‌شود.",
+     "active": true,
+     "id": 114,
+     "type": "BEST_PRICE",
+     "priority": 127
+    }
+   ]
+  }
+ }
+}

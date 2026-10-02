@@ -1,0 +1,43 @@
+{
+ "status": true,
+ "categories": [
+  {
+   "id": [
+    99999999
+   ],
+   "title": "محصولات کالابرگی",
+   "slug": "kalabarg",
+   "sub_categories": [
+    {
+     "id": 731224,
+     "title": "شیر",
+     "slug": "milk"
+    },
+    {
+     "id": 731225,
+     "title": "پنیر آشپزی",
+     "slug": "pizza-cheese"
+    }
+   ]
+  },
+  {
+   "id": [
+    731205
+   ],
+   "title": "لبنیات و بستنی",
+   "slug": "dairy",
+   "sub_categories": [
+    {
+     "id": 731224,
+     "title": "شیر",
+     "slug": "milk"
+    },
+    {
+     "id": 731225,
+     "title": "پنیر آشپزی",
+     "slug": "pizza-cheese"
+    }
+   ]
+  }
+ ]
+}

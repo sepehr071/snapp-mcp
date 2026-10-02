@@ -1,0 +1,144 @@
+{
+ "status": true,
+ "data": {
+  "count": 17,
+  "open_count": 17,
+  "finalResult": [
+   {
+    "data": {
+     "is_market_party": false,
+     "id": 65226,
+     "backgroundImage": "",
+     "commentCount": 22436,
+     "minimumOrderValue": 100000,
+     "title": "سوپرمارکت صبا - یاران دریان (جردن)",
+     "code": "097o9d",
+     "status": "ACTIVE",
+     "area": "امانيه",
+     "countReview": 22436,
+     "is_express_pin": false,
+     "textCommentCount": 22436,
+     "city": "تهران",
+     "lat": 35.77203,
+     "long": 51.42163,
+     "vendor_type": "CORNER_SHOP",
+     "isOpen": false,
+     "preOrderEnabled": true,
+     "deliveryFee": 0,
+     "deliveryTime": 30,
+     "scheduleOption": null,
+     "discountValueForView": null,
+     "rating": 7.6,
+     "rate": 7.6,
+     "is_pro": false,
+     "coupons": [],
+     "couponDeliveryValue": 0,
+     "couponMinBasket": 0
+    },
+    "type": "VENDOR"
+   },
+   {
+    "data": {
+     "is_market_party": false,
+     "id": 118396,
+     "backgroundImage": "",
+     "commentCount": 0,
+     "minimumOrderValue": 100000,
+     "title": "سوپرمارکت یاران(ولیعصر)",
+     "code": "0wq22z",
+     "status": "ACTIVE",
+     "area": "میرداماد",
+     "countReview": 0,
+     "is_express_pin": false,
+     "textCommentCount": 0,
+     "city": "تهران",
+     "lat": 35.7653073,
+     "long": 51.4267499,
+     "vendor_type": "CORNER_SHOP",
+     "isOpen": false,
+     "preOrderEnabled": true,
+     "deliveryFee": 0,
+     "deliveryTime": 30,
+     "scheduleOption": null,
+     "discountValueForView": null,
+     "rating": 0,
+     "rate": 0,
+     "is_pro": true,
+     "coupons": [
+      {
+       "id": 2522,
+       "title": "ارسال رایگان",
+       "rewardMode": "DELIVERY_FEE",
+       "rewardType": "AMOUNT",
+       "rewardValue": 34000,
+       "rewardMaxValue": 0
+      }
+     ],
+     "couponDeliveryValue": 34000,
+     "couponMinBasket": 280000
+    },
+    "type": "VENDOR"
+   },
+   {
+    "data": {
+     "is_market_party": false,
+     "id": 113839,
+     "backgroundImage": "",
+     "commentCount": 0,
+     "minimumOrderValue": 100000,
+     "title": "سوپرمارکت دیدمارکت (جردن)",
+     "code": "0njw2v",
+     "status": "ACTIVE",
+     "area": "امانيه",
+     "countReview": 0,
+     "is_express_pin": false,
+     "textCommentCount": 0,
+     "city": "تهران",
+     "lat": 35.77192425,
+     "long": 51.42254625,
+     "vendor_type": "CORNER_SHOP",
+     "isOpen": true,
+     "preOrderEnabled": true,
+     "deliveryFee": 30400,
+     "deliveryTime": 45,
+     "scheduleOption": null,
+     "discountValueForView": null,
+     "rating": 8.6,
+     "rate": 8.6,
+     "is_pro": true,
+     "coupons": [
+      {
+       "id": 2522,
+       "title": "ارسال رایگان",
+       "rewardMode": "DELIVERY_FEE",
+       "rewardType": "AMOUNT",
+       "rewardValue": 34000,
+       "rewardMaxValue": 0
+      }
+     ],
+     "couponDeliveryValue": 34000,
+     "couponMinBasket": 280000
+    },
+    "type": "VENDOR"
+   }
+  ],
+  "sorts": [
+   {
+    "title_fa": "پیش فرض",
+    "title": "default"
+   },
+   {
+    "title_fa": "ارزانترین ارسال",
+    "title": "lowest_delivery_price"
+   },
+   {
+    "title_fa": "بالاترین امتیاز",
+    "title": "highest_rating"
+   }
+  ],
+  "single_super_mall": {
+   "code": "0gkdjr",
+   "title": "هایپراستار باکری ۲ (همواره تخفیف)"
+  }
+ }
+}

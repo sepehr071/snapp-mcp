@@ -1,0 +1,21 @@
+{
+ "status": true,
+ "data": {
+  "preorder": null,
+  "deliveryServices": [
+   {
+    "code": "DELIVERY",
+    "title": "پیک رستوران"
+   }
+  ],
+  "delivery": {
+   "code": "DELIVERY",
+   "fee": 25000,
+   "discount": 0,
+   "eta": 45,
+   "isJimbo": false
+  },
+  "state": "ONNRML-1034",
+  "reopeningTime": null
+ }
+}

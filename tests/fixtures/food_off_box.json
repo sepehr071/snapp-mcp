@@ -1,0 +1,33 @@
+{
+ "data": {
+  "result": [
+   {
+    "code": "0nqj9r",
+    "title": "ایران برگر (فلکه گاز)",
+    "is_open": true,
+    "delivery_fee": 0,
+    "isDeliveryFeeHasDiscount": false,
+    "deliveryFeeAfterDiscount": 0,
+    "promotion_text": "۳۰% تخفیف پارتی",
+    "eta": 60
+   },
+   {
+    "code": "0gn42q",
+    "title": "ایران برگر (دروازه قرآن)",
+    "is_open": true,
+    "delivery_fee": 0,
+    "isDeliveryFeeHasDiscount": false,
+    "deliveryFeeAfterDiscount": 0,
+    "promotion_text": "۳۰% تخفیف پارتی",
+    "eta": 65
+   }
+  ],
+  "total": 43
+ },
+ "status": true,
+ "code": 200,
+ "pagination": {
+  "page": 0,
+  "size": 10
+ }
+}

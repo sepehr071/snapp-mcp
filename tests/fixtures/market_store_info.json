@@ -1,0 +1,75 @@
+{
+ "vendorInfo": {
+  "paymentTypesToShow": [
+   "آنلاین"
+  ],
+  "isLiked": false,
+  "latencyMinutes": 0,
+  "id": 72395,
+  "backgroundImage": null,
+  "commentCount": 133646,
+  "minimumOrderValue": 140000,
+  "title": "اسمارت جردن (سوپرمارکت زنجیره ای اسنپ)",
+  "code": "32xxwe",
+  "status": "ACTIVE",
+  "area": "امانيه",
+  "vendorImages": [],
+  "address": "خیابان ولیعصر، روبه روی خیابان جام جم ، نبش کوچه طاهری، پاساژ جام جم طبقه اول اسمارت جردن",
+  "preOrderStatus": "OFF",
+  "vendorImagesCount": 0,
+  "location": {
+   "lat": 35.78087635,
+   "lon": 51.4141795
+  },
+  "schedules": [
+   {
+    "weekDay": 1,
+    "allDay": false,
+    "startHour": "08:00",
+    "stopHour": "21:59",
+    "type": "OPENED",
+    "scheduleType": "normal",
+    "weight": 1
+   },
+   {
+    "weekDay": 2,
+    "allDay": false,
+    "startHour": "08:00",
+    "stopHour": "21:59",
+    "type": "OPENED",
+    "scheduleType": "normal",
+    "weight": 1
+   }
+  ],
+  "reviewStars": {
+   "five": 74,
+   "four": 8,
+   "one": 9,
+   "three": 5,
+   "two": 2
+  },
+  "textCommentCount": 133646,
+  "city": "تهران",
+  "isOpen": false,
+  "is_preorder_enabled": false,
+  "deliveryData": {
+   "isExpress": false,
+   "doesDeliver": false,
+   "distance": 886,
+   "id": 72395,
+   "deliveryFee": 0,
+   "initialDeliveryFee": 0,
+   "minimumOrderValue": 140000,
+   "deliveryStatus": "NOT_OPEN",
+   "scheduleOption": null
+  },
+  "preOrderSchedule": {},
+  "maxDiscount": 0,
+  "isOutOfArea": false,
+  "deliveryStatus": "cannot deliver",
+  "rating": 4.3,
+  "vendorState": 3,
+  "vendorStateText": "در حال حاضر بسته است.",
+  "is_pro": true
+ }
+}

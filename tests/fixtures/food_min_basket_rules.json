@@ -1,0 +1,15 @@
+{
+ "status": true,
+ "data": [
+  {
+   "conditionType": "PRODUCT_BADGE_EQUAL",
+   "conditionValue": "13",
+   "value": 1
+  },
+  {
+   "conditionType": "DEFAULT",
+   "conditionValue": "",
+   "value": 699000
+  }
+ ]
+}

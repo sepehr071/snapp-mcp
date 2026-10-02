@@ -1,0 +1,74 @@
+[
+ {
+  "status": true,
+  "data": [
+   {
+    "place_id": "::49322519480",
+    "name": "ارامگاه سعدی",
+    "value": "",
+    "filter": "",
+    "description": "شیراز، نیستان سعدی، نزدیک بوستان",
+    "structured_formatting": {
+     "main_text": "ارامگاه سعدی",
+     "secondary_text": "شیراز، نیستان سعدی، نزدیک بوستان"
+    },
+    "type": "historic:memorial",
+    "location": {
+     "latitude": "29.6224825",
+     "longitude": "52.5831179"
+    },
+    "distance": 5076,
+    "area_length": 0,
+    "admin_level": 0,
+    "all_tags": null,
+    "index_name": "super_popular",
+    "es_score": 0.5670427223968929,
+    "name_highlight_ranges": [
+     [
+      8,
+      12
+     ]
+    ],
+    "desc_highlight_ranges": [
+     [
+      14,
+      18
+     ]
+    ],
+    "tile_place_id": "",
+    "IsEndUserData": true
+   },
+   {
+    "place_id": "::5958361571",
+    "name": "سعدی",
+    "value": "",
+    "filter": "",
+    "description": "شیراز، نزدیک ۱۵",
+    "structured_formatting": {
+     "main_text": "سعدی",
+     "secondary_text": "شیراز، نزدیک ۱۵"
+    },
+    "type": "highway:tertiary",
+    "location": {
+     "latitude": "29.622778",
+     "longitude": "52.5815015"
+    },
+    "distance": 4925,
+    "area_length": 0,
+    "admin_level": 0,
+    "all_tags": null,
+    "index_name": "super_popular",
+    "es_score": 0.2567042722396893,
+    "name_highlight_ranges": [
+     [
+      0,
+      4
+     ]
+    ],
+    "tile_place_id": "",
+    "IsEndUserData": true
+   }
+  ],
+  "message": "success"
+ }
+]

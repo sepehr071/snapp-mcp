@@ -1,0 +1,39 @@
+{
+ "status": true,
+ "data": {
+  "count": 6723,
+  "pageSize": 30,
+  "comments": [
+   {
+    "commentId": 29139742,
+    "date": "۱۴۰۴/۱۰/۲۲",
+    "createdDate": "2026-01-12 16:45:34",
+    "sender": "user",
+    "customerId": 3399496,
+    "commentText": "آب معدنی ارسال نشده",
+    "deliveryComment": null,
+    "rating": 2,
+    "rate": 2,
+    "feeling": "SAD",
+    "status": 1,
+    "expeditionType": "ZF_EXPRESS",
+    "replies": []
+   },
+   {
+    "commentId": 26897137,
+    "date": "۱۴۰۴/۰۲/۱۳",
+    "createdDate": "2025-05-03 18:24:05",
+    "sender": "user",
+    "customerId": 2774443,
+    "commentText": "ممنون از هدیه ای که گذاشته بودید",
+    "deliveryComment": null,
+    "rating": 10,
+    "rate": 10,
+    "feeling": "HAPPY",
+    "status": 1,
+    "expeditionType": "ZF_EXPRESS",
+    "replies": []
+   }
+  ]
+ }
+}

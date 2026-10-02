@@ -1,0 +1,56 @@
+{
+ "data": [
+  {
+   "type": "coupon",
+   "coupon_data": {
+    "id": 4959272,
+    "title": "ارسال رایگان سفارش",
+    "reward": "free_delivery_fee",
+    "reward_packet": {
+     "deliveryDiscount": {
+      "type": "percent",
+      "value": 100,
+      "cashBack": false,
+      "maxDiscount": -1
+     },
+     "basketDiscount": null,
+     "extraProducts": null
+    },
+    "minimum_basket_price": null,
+    "condition": "orders_of_vendor_count",
+    "condition_message": "مخصوص سفارش اول",
+    "activation_order_number": 1
+   }
+  },
+  {
+   "type": "coupon",
+   "coupon_data": {
+    "id": 5044814,
+    "title": "نان سیر رایگان",
+    "reward": "extra_item",
+    "reward_packet": {
+     "deliveryDiscount": null,
+     "basketDiscount": null,
+     "extraProducts": [
+      {
+       "productVariationId": 32782331,
+       "title": "نان سیر",
+       "price": 0,
+       "quantity": 1
+      }
+     ]
+    },
+    "minimum_basket_price": "2980000",
+    "condition": "basket_price",
+    "condition_message": "برای دریافت این کوپن باید مبلغ سبد خریدتان را به 2980000 تومان برسانید.",
+    "activation_order_number": 0
+   }
+  },
+  {
+   "type": "cashback",
+   "cashback_data": {
+    "is_active": true
+   }
+  }
+ ]
+}

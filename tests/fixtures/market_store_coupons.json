@@ -1,0 +1,40 @@
+{
+ "error": {
+  "debug": "success"
+ },
+ "manualSelected": 0,
+ "autoSelected": 0,
+ "coupons": [
+  {
+   "id": 2522,
+   "title": "ارسال رایگان",
+   "description": "ویژه پرو، حداقل خرید 280 هزار تومان",
+   "userBase": false,
+   "isApplicable": false,
+   "conditions": [
+    {
+     "title": "خرید حداقل 280,000 تومان",
+     "condition": "basket_size"
+    },
+    {
+     "title": "ویژه کاربران پرو",
+     "condition": "user_pro"
+    }
+   ],
+   "totalUsages": 0,
+   "quantityPerUser": 0,
+   "rewardMode": "COUPON_DELIVERY_FEE",
+   "rewardType": "AMOUNT",
+   "rewardValue": 34000,
+   "rewardMaxValue": 0,
+   "score": 2,
+   "startDate": 1787051795000,
+   "endDate": 1881606635000,
+   "isSelected": false,
+   "isUsed": false
+  }
+ ],
+ "basketDiscountAmount": 0,
+ "shippingFeeDiscountAmount": 0,
+ "is_deselected": false
+}

@@ -1,0 +1,98 @@
+{
+ "success": true,
+ "data": {
+  "pagination": {
+   "page": 0,
+   "size": 5
+  },
+  "product_variations": {
+   "total": 1291,
+   "items": [
+    {
+     "id": 37544507,
+     "title": "پیتزا میت لاور ایتالیایی 32 سانتی متر",
+     "price": 1538000,
+     "discount": 0,
+     "discountRatio": 0,
+     "priceAfterDiscount": 1538000,
+     "rating": 1,
+     "normalized_rating": 10,
+     "is_ads": true,
+     "vendor": {
+      "code": "jy6qqr",
+      "title": "پیتزا وای فای (عفیف آباد)",
+      "delivery_fee": 25000,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 699000,
+      "eta": 45,
+      "is_open": true
+     }
+    },
+    {
+     "id": 19355419,
+     "title": "پیتزا پپرونی",
+     "price": 1135000,
+     "discount": 0,
+     "discountRatio": 0,
+     "priceAfterDiscount": 1135000,
+     "rating": 0.8,
+     "normalized_rating": 8,
+     "is_ads": false,
+     "vendor": {
+      "code": "32rmzq",
+      "title": "فست فود بورک",
+      "delivery_fee": 31200,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 20000,
+      "eta": 25,
+      "is_open": true
+     }
+    },
+    {
+     "id": 37544513,
+     "title": "پیتزا استیک ایتالیایی 32 سانتی متر",
+     "price": 1428000,
+     "discount": 0,
+     "discountRatio": 0,
+     "priceAfterDiscount": 1428000,
+     "rating": 1,
+     "normalized_rating": 10,
+     "is_ads": true,
+     "vendor": {
+      "code": "jy6qqr",
+      "title": "پیتزا وای فای (عفیف آباد)",
+      "delivery_fee": 25000,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 699000,
+      "eta": 45,
+      "is_open": true
+     }
+    },
+    {
+     "id": 21543750,
+     "title": "پیتزا تورینو ",
+     "price": 834000,
+     "discount": 0,
+     "discountRatio": 0,
+     "priceAfterDiscount": 834000,
+     "rating": 0.7,
+     "normalized_rating": 7,
+     "is_ads": false,
+     "vendor": {
+      "code": "09o21d",
+      "title": "فست فود پینو پینو (قصرالدشت)",
+      "delivery_fee": 40000,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 300000,
+      "eta": 65,
+      "is_open": true
+     }
+    }
+   ]
+  }
+ }
+}

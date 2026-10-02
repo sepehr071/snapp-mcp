@@ -1,0 +1,56 @@
+{
+ "data": {
+  "result": [
+   {
+    "id": 5260662,
+    "brand": "کوهپناه",
+    "brand_id": 1230,
+    "discountRatio": null,
+    "discount": 0,
+    "price": 390000,
+    "title": "ماست پرچرب کوهپناه 2.2 کیلوگرمی",
+    "product_entity": "ماست",
+    "root_category_id": 731205,
+    "root_category_title": "لبنیات و بستنی",
+    "root_category_slug": "dairy",
+    "vendor_id": 72395,
+    "menu_category_id": 731227,
+    "menu_category_title": "ماست",
+    "menu_category_slug": "yogurt",
+    "document_id": "5260662-72395",
+    "stock": 7,
+    "sub_vendor_id": null
+   },
+   {
+    "id": 6453480,
+    "brand": "میهن",
+    "brand_id": 105,
+    "discountRatio": null,
+    "discount": 0,
+    "price": 231000,
+    "title": "ماست کم چرب میهن 2 کیلوگرمی",
+    "product_entity": "ماست",
+    "root_category_id": 731205,
+    "root_category_title": "لبنیات و بستنی",
+    "root_category_slug": "dairy",
+    "vendor_id": 72395,
+    "menu_category_id": 731227,
+    "menu_category_title": "ماست",
+    "menu_category_slug": "yogurt",
+    "document_id": "6453480-72395",
+    "stock": 4,
+    "sub_vendor_id": null
+   }
+  ],
+  "total": 75,
+  "term": "ماست",
+  "query_id": null
+ },
+ "status": true,
+ "code": 200,
+ "pagination": {
+  "page": 0,
+  "size": 10
+ },
+ "product_query_id": null
+}

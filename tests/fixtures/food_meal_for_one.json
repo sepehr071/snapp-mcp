@@ -1,0 +1,78 @@
+{
+ "success": true,
+ "data": {
+  "count": 30,
+  "description": "قیمت، حداکثر ۲۹۹ هزار تومان + ارسال رایگان",
+  "finalResult": [
+   {
+    "type": "PRODUCT",
+    "data": {
+     "id": 37360889,
+     "title": "مینی زینگربرگر با سالادکلم",
+     "price": 335000,
+     "discount": 87100,
+     "discountRatio": 26,
+     "priceAfterDiscount": 247900,
+     "normalized_rating": 8.402515723,
+     "no_stock": false,
+     "vendor": {
+      "vendorCode": "0nqj9r",
+      "title": "ایران برگر (فلکه گاز)",
+      "is_open": true,
+      "delivery_fee": 0,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 420000,
+      "eta": 60
+     }
+    }
+   },
+   {
+    "type": "PRODUCT",
+    "data": {
+     "id": 37176042,
+     "title": "مینی چیزماشروم برگر با سالادکلم",
+     "price": 335000,
+     "discount": 87100,
+     "discountRatio": 26,
+     "priceAfterDiscount": 247900,
+     "normalized_rating": 7.8061674,
+     "no_stock": false,
+     "vendor": {
+      "vendorCode": "0nqj9r",
+      "title": "ایران برگر (فلکه گاز)",
+      "is_open": true,
+      "delivery_fee": 0,
+      "isDeliveryFeeHasDiscount": false,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 420000,
+      "eta": 60
+     }
+    }
+   },
+   {
+    "type": "PRODUCT",
+    "data": {
+     "id": 37175251,
+     "title": "مینی زینگربرگر با سالادکلم",
+     "price": 335000,
+     "discount": 87100,
+     "discountRatio": 26,
+     "priceAfterDiscount": 247900,
+     "normalized_rating": 8.456692913,
+     "no_stock": false,
+     "vendor": {
+      "vendorCode": "0gn42q",
+      "title": "ایران برگر (دروازه قرآن)",
+      "is_open": true,
+      "delivery_fee": 0,
+      "isDeliveryFeeHasDiscount": true,
+      "deliveryFeeAfterDiscount": 0,
+      "minOrder": 420000,
+      "eta": 65
+     }
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "success": true,
+ "data": {
+  "can_show": true,
+  "current_date": "2026-10-02T23:27:29+03:30",
+  "expire_date": "2026-10-02T23:30:00+03:30",
+  "has_modal": false
+ }
+}

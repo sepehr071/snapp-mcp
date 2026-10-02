@@ -1,0 +1,63 @@
+{
+ "status": true,
+ "data": {
+  "count": 310,
+  "open_count": 131,
+  "finalResult": [
+   {
+    "type": "VENDOR",
+    "data": {
+     "code": "p6mr7e",
+     "title": "برگر کماچ (شعبه 1)",
+     "rating": 9.002158794229139,
+     "commentCount": 6315,
+     "is_open": true,
+     "deliver": true,
+     "deliveryFee": 32000,
+     "isDeliveryFeeHasDiscount": false,
+     "deliveryFeeAfterDiscount": 0,
+     "has_coupon": false,
+     "best_coupon": "",
+     "discountValueForView": 0,
+     "eta": 50
+    }
+   },
+   {
+    "type": "VENDOR",
+    "data": {
+     "code": "0rx16o",
+     "title": "فست فود تند و تیز هدایت",
+     "rating": 8.43671806321064,
+     "commentCount": 5730,
+     "is_open": true,
+     "deliver": true,
+     "deliveryFee": 21700,
+     "isDeliveryFeeHasDiscount": false,
+     "deliveryFeeAfterDiscount": 0,
+     "has_coupon": true,
+     "best_coupon": "ارسال رایگان و 5% تخفیف ویژه کاربران PRO",
+     "discountValueForView": 25,
+     "eta": 65
+    }
+   },
+   {
+    "type": "VENDOR",
+    "data": {
+     "code": "pz88qe",
+     "title": "رستوران ایتالیایی جنوا (باغشاه)",
+     "rating": 9.48007670265453,
+     "commentCount": 5266,
+     "is_open": true,
+     "deliver": true,
+     "deliveryFee": 27000,
+     "isDeliveryFeeHasDiscount": false,
+     "deliveryFeeAfterDiscount": 0,
+     "has_coupon": false,
+     "best_coupon": "",
+     "discountValueForView": 0,
+     "eta": 45
+    }
+   }
+  ]
+ }
+}

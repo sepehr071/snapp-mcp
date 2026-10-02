@@ -31,7 +31,7 @@ restaurant's minimum order. An agent with `snapp-mcp` does that in seconds:
 
 > **You:** Cheapest pizza delivered to Vanak Square right now, including delivery?
 >
-> **Agent:** *calls* `find_location("میدان ونک")` → `food_find_cheapest("پیتزا", 35.7577, 51.4095)`
+> **Agent:** *calls* `find_location(query="میدان ونک")` → `food_find_cheapest(query="پیتزا", lat=35.7577, long=51.4095)`
 >
 > | Total | Dish | Restaurant | Breakdown |
 > |---:|---|---|---|
@@ -111,15 +111,15 @@ Then just ask:
 - "Which restaurants near Tajrish have free delivery and at least 4.5 stars?"
 - "Show FoodParty deals with more than 40% off near me."
 - "Where is low-fat milk cheapest near Jordan, Tehran? Include delivery."
-- «ارزان&zwnj;ترین کباب نزدیک میدان آزادی شیراز با هزینه ارسال؟»
+- <span dir="rtl">ارزان&zwnj;ترین کباب نزدیک میدان آزادی شیراز با هزینه ارسال؟</span>
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A["AI agent<br/>Claude · Cursor · Copilot"] -- "MCP over stdio" --> S["snapp-mcp<br/>on your machine"]
-    S -- "HTTPS from your IP" --> F["snappfood.ir<br/>restaurants"]
-    S -- "HTTPS from your IP" --> M["snapp.market<br/>groceries"]
+    A[AI agent: Claude, Cursor, Copilot] -->|MCP over stdio| S[snapp-mcp on your machine]
+    S -->|HTTPS from your IP| F[snappfood.ir restaurants]
+    S -->|HTTPS from your IP| M[snapp.market groceries]
 ```
 
 `snapp-mcp` runs locally and calls the same public endpoints the Snappfood and SnappMarket web apps use.

@@ -12,10 +12,10 @@ jobs:
     environment: pypi
     permissions:
       id-token: write  # PyPI trusted publishing
-      contents: read
+      contents: write  # GitHub Release
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
       - name: Check versions match the tag
         run: |
           TAG=${GITHUB_REF_NAME#v}
@@ -25,6 +25,9 @@ jobs:
       - run: uv sync --locked && uv run pytest -q
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
+      - run: gh release create "$GITHUB_REF_NAME" dist/* --generate-notes --title "$GITHUB_REF_NAME"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   mcp-registry:
     needs: pypi
@@ -33,7 +36,7 @@ jobs:
       id-token: write  # MCP Registry login via GitHub OIDC
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Wait for PyPI to serve the new version
         run: |
           for i in $(seq 1 30); do

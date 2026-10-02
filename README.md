@@ -115,11 +115,16 @@ Then just ask:
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A[AI agent: Claude, Cursor, Copilot] -->|MCP over stdio| S[snapp-mcp on your machine]
-    S -->|HTTPS from your IP| F[snappfood.ir restaurants]
-    S -->|HTTPS from your IP| M[snapp.market groceries]
+```text
+  AI agent  (Claude, Cursor, Copilot, ...)
+      │
+      │  MCP over stdio
+      ▼
+  snapp-mcp  (runs on your machine, uses your IP)
+      │
+      │  HTTPS
+      ├──────▶  snappfood.ir    restaurants
+      └──────▶  snapp.market    groceries
 ```
 
 `snapp-mcp` runs locally and calls the same public endpoints the Snappfood and SnappMarket web apps use.

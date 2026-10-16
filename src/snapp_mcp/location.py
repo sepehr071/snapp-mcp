@@ -9,8 +9,8 @@ from pydantic import Field
 from .http import FOOD_BASE, FOOD_PARAMS, ApiError, fetch
 from .registry import tool
 
-Lat = Annotated[float, Field(ge=24, le=40, description="Latitude of the delivery point (Iran: ~25 to ~40).")]
-Long = Annotated[float, Field(ge=44, le=64, description="Longitude of the delivery point (Iran: ~44 to ~63).")]
+Lat = Annotated[float, Field(ge=24, le=40, description="Delivery point latitude.")]
+Long = Annotated[float, Field(ge=44, le=64, description="Delivery point longitude.")]
 
 # Tehran center, used to bias place search when no point is given.
 TEHRAN = (35.6892, 51.3890)
@@ -20,21 +20,16 @@ TEHRAN = (35.6892, 51.3890)
 async def find_location(
     query: Annotated[
         str,
-        Field(
-            min_length=2, description="Place, street, landmark or neighbourhood, Persian works best, e.g. 'میدان ونک'."
-        ),
+        Field(min_length=2, description="Place, street or landmark, e.g. 'میدان ونک'."),
     ],
-    near_lat: Annotated[
-        float | None, Field(description="Bias results toward this latitude (e.g. a city center from list_cities).")
-    ] = None,
-    near_long: Annotated[float | None, Field(description="Bias results toward this longitude.")] = None,
+    near_lat: Annotated[float | None, Field(description="Bias latitude (e.g. a city center from list_cities).")] = None,
+    near_long: Annotated[float | None, Field(description="Bias longitude.")] = None,
     limit: Annotated[int, Field(ge=1, le=20, description="Max places to return.")] = 5,
 ) -> dict[str, Any]:
     """Turn a place name or address into latitude/longitude.
 
-    Use first when the user gives an address instead of coordinates; every food_* and
-    market_* tool needs lat/long. Results are biased toward near_lat/near_long
-    (default Tehran), so pass a city center for other cities.
+    Use first when the user gives an address; food_* and market_* tools need lat/long.
+    Biased toward near_lat/near_long (default Tehran): pass a city center for other cities.
     """
     lat, lon = (near_lat, near_long) if near_lat is not None and near_long is not None else TEHRAN
     # The map endpoints reject the common client params and use `lon`, not `long`.
@@ -68,13 +63,11 @@ async def reverse_geocode(lat: Lat, long: Long) -> dict[str, Any]:
 
 @tool("List cities")
 async def list_cities(
-    query: Annotated[
-        str | None, Field(description="Optional filter on the Persian title or English code, e.g. 'شیراز' or 'Shiraz'.")
-    ] = None,
+    query: Annotated[str | None, Field(description="Filter on Persian title or English code, e.g. 'شیراز'.")] = None,
 ) -> dict[str, Any]:
     """List cities Snappfood serves, with id, names and center coordinates.
 
-    Use the center coordinates as a rough delivery point when the user only names a city.
+    Use the center as a rough delivery point when the user only names a city.
     """
     body = await fetch(f"{FOOD_BASE}/mobile/v2/area/cities", common=FOOD_PARAMS)
     cities = body["data"]["cities"]
@@ -93,5 +86,5 @@ def _unwrap_map(body: Any) -> list[dict[str, Any]]:
     """Map endpoints wrap the payload in a one-item array and report errors as status:false."""
     item = body[0] if isinstance(body, list) and body else body
     if not isinstance(item, dict) or item.get("status") is False:
-        raise ApiError(f"Map service rejected the request: {item}")
+        raise ApiError(f"Map service rejected the request: {str(item)[:300]}")
     return item.get("data") or []

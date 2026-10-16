@@ -8,14 +8,14 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
-from .http import MARKET_BASE, MARKET_PARAMS, ApiError, fetch
+from .http import MARKET_BASE, MARKET_PARAMS, ApiError, auth_lock, fetch
 from .location import Lat, Long
-from .registry import tool
+from .registry import clip, tool
 
 VendorCode = Annotated[
     str, Field(pattern=r"^[0-9a-z]{4,10}$", description="Store code from market_search / market_stores, e.g. '32xxwe'.")
 ]
-Page = Annotated[int, Field(ge=0, le=50, description="Page number, from 0.")]
+Page = Annotated[int, Field(ge=0, le=50, description="Page, from 0.")]
 
 # Anonymous token for the endpoints that answer 401 without one (valid 3 days).
 _token: str | None = None
@@ -24,19 +24,16 @@ _device_uid = str(uuid.uuid4())
 
 @tool("Search groceries")
 async def market_search(
-    query: Annotated[
-        str, Field(min_length=2, description="Product name, Persian works best, e.g. 'شیر' or 'ماست کاله'.")
-    ],
+    query: Annotated[str, Field(min_length=2, description="Product name, e.g. 'شیر'.")],
     lat: Lat,
     long: Long,
     page: Page = 0,
-    limit: Annotated[int, Field(ge=1, le=30, description="Stores per page.")] = 20,
+    limit: Annotated[int, Field(ge=1, le=30, description="Stores per page.")] = 8,
 ) -> dict[str, Any]:
     """Search a grocery product across all SnappMarket stores delivering to the point.
 
-    Use to see which stores carry an item and at what price. Returns stores (open or not)
-    with up to ~5 matching products each. For a single flat cheapest-first list use
-    market_find_cheapest instead.
+    Use to see which stores carry an item and at what price: stores (open or not) with up to ~5
+    matching products each. For one flat cheapest-first list use market_find_cheapest.
     """
     data = await _search(query, lat, long, page, limit)
     return {
@@ -54,17 +51,16 @@ async def market_search(
 
 @tool("Find cheapest groceries")
 async def market_find_cheapest(
-    query: Annotated[str, Field(min_length=2, description="Product name, Persian works best, e.g. 'شیر کم چرب'.")],
+    query: Annotated[str, Field(min_length=2, description="Product name, e.g. 'شیر کم چرب'.")],
     lat: Lat,
     long: Long,
-    pages: Annotated[int, Field(ge=1, le=5, description="Search pages to scan, 12 stores each.")] = 3,
-    limit: Annotated[int, Field(ge=1, le=100, description="Max offers to return.")] = 20,
+    pages: Annotated[int, Field(ge=1, le=5, description="Pages to scan, 12 stores each.")] = 3,
+    limit: Annotated[int, Field(ge=1, le=100, description="Max offers.")] = 10,
 ) -> dict[str, Any]:
     """Find the cheapest in-stock offers for a grocery product near the point.
 
-    Use when the user wants the lowest price for an item. Scans the search results of
-    open stores that deliver to the point and returns one flat list sorted by final price
-    (price - discount). Check delivery_fee and min_order before recommending a store.
+    Use for the lowest price of an item. Scans open stores that deliver to the point; one flat list
+    sorted by final price. Check delivery_fee and min_order before recommending a store.
     """
     results = await asyncio.gather(*(_search(query, lat, long, page, 12) for page in range(pages)))
     offers = []
@@ -94,8 +90,7 @@ async def market_stores(
 ) -> dict[str, Any]:
     """List SnappMarket stores delivering to the point, with delivery fee, minimum order and rating.
 
-    Use to pick a store (cheapest delivery or best rated) before browsing it with
-    market_store_products.
+    Use to pick a store before browsing it with market_store_products.
     """
     body = await fetch(
         f"{MARKET_BASE}/express-vendor/general/vendors-list",
@@ -139,9 +134,8 @@ async def market_stores(
 async def market_store_info(vendor_code: VendorCode, lat: Lat, long: Long) -> dict[str, Any]:
     """Get one store's delivery fee, minimum order, opening hours, rating and coupons for the point.
 
-    Use before recommending a store to know the true cost of a basket:
-    sum(final prices) + delivery_fee - applicable coupon, and the basket must reach min_order.
-    Read each coupon's conditions; isApplicable is false for logged-out users.
+    Use before recommending a store. Basket cost = sum(final prices) + delivery_fee - coupon, and
+    it must reach min_order. Read each coupon's conditions; is_applicable is false when logged out.
     """
     loc = {"lat": lat, "long": long}
     body = await _fetch_auth(f"{MARKET_BASE}/express-home/vendor/{vendor_code}", {**loc, "variable": vendor_code})
@@ -199,21 +193,19 @@ async def market_store_products(
     vendor_code: VendorCode,
     lat: Lat,
     long: Long,
-    query: Annotated[str | None, Field(min_length=2, description="Search text inside this store, e.g. 'ماست'.")] = None,
+    query: Annotated[str | None, Field(min_length=2, description="Search inside this store, e.g. 'ماست'.")] = None,
     category_id: Annotated[
         int | None,
-        Field(ge=1, description="Top-level category id (from this tool without arguments, or market_categories)."),
+        Field(ge=1, description="Top-level category id (from this tool without arguments)."),
     ] = None,
-    subcategory_id: Annotated[
-        int | None, Field(ge=1, description="Sub-category id; needs its parent category_id.")
-    ] = None,
+    subcategory_id: Annotated[int | None, Field(ge=1, description="Sub-category id; needs category_id.")] = None,
     page: Page = 0,
 ) -> dict[str, Any]:
     """Browse or search the products of one store.
 
-    - With query: search the store (takes precedence over category ids).
-    - With category_id (and optional subcategory_id): list that category's products.
-    - With neither: list the store's categories and sub-categories with their ids.
+    - query: search the store (wins over category ids).
+    - category_id (+ optional subcategory_id): that category's products.
+    - neither: the store's categories and sub-categories with ids.
     """
     loc = {"lat": lat, "long": long}
     if query:
@@ -263,8 +255,8 @@ async def market_store_products(
 async def market_categories(lat: Lat, long: Long) -> dict[str, Any]:
     """List SnappMarket product categories and sub-categories with their ids.
 
-    The ids work as category_id / subcategory_id in market_store_products. The first
-    entry (id 99999999) is the virtual kalabarg (government e-coupon eligible) category.
+    The ids work as category_id / subcategory_id in market_store_products. Id 99999999 is the
+    virtual kalabarg (government e-coupon) category.
     """
     body = await fetch(f"{MARKET_BASE}/express-search/categories", {"lat": lat, "long": long}, common=MARKET_PARAMS)
     categories = []
@@ -283,12 +275,13 @@ async def market_categories(lat: Lat, long: Long) -> dict[str, Any]:
 
 @tool("Grocery product details")
 async def market_product(
-    product_id: Annotated[int, Field(ge=1, description="Product id from a market_* product list.")],
+    product_id: Annotated[int, Field(ge=1, description="Product id from a market_* list.")],
     vendor_code: VendorCode,
+    full_text: Annotated[bool, Field(description="Return the description uncut (default cut to 400 chars).")] = False,
 ) -> dict[str, Any]:
     """Get one product's details and price in one store.
 
-    Use to confirm the current price/discount of an item the user picked.
+    Use to confirm the current price of an item the user picked.
     """
     body = await fetch(
         f"{MARKET_BASE}/express-search/mobile/v2/product-variation/view",
@@ -301,7 +294,7 @@ async def market_product(
         "brand": d.get("brandTitle"),
         "category": d.get("categoryTitle"),
         "subcategory": d.get("subcategoryTitle"),
-        "description": d.get("description") or None,
+        "description": clip(d.get("description") or None, full_text),
         "badges": [b.get("name") for b in d.get("badges") or []],
         "store_code": vendor_code,
     }
@@ -311,12 +304,12 @@ async def market_product(
 async def market_party_deals(
     lat: Lat,
     long: Long,
-    limit: Annotated[int, Field(ge=1, le=100, description="Max deals to return.")] = 30,
+    limit: Annotated[int, Field(ge=1, le=100, description="Max deals.")] = 15,
 ) -> dict[str, Any]:
     """List current SnappMarket "market party" flash deals near the point, biggest discount first.
 
-    Use when the user wants the best grocery discounts right now. Each order may contain
-    at most capacity_per_order deal items. segment 'new_user' deals are only for new customers.
+    Use for the best grocery discounts right now. An order may hold at most capacity_per_order
+    deal items; segment 'new_user' deals are for new customers only.
     """
     body = await _fetch_auth(
         f"{MARKET_BASE}/landing/market-party/{lat}/{long}",
@@ -351,11 +344,13 @@ async def market_party_deals(
 
 
 @tool("Grocery store reviews")
-async def market_reviews(vendor_code: VendorCode) -> dict[str, Any]:
+async def market_reviews(
+    vendor_code: VendorCode,
+    full_text: Annotated[bool, Field(description="Return comment text uncut (default cut to 400 chars).")] = False,
+) -> dict[str, Any]:
     """Read a store's 30 most relevant customer comments, rating 0-5.
 
-    Use as a quality check before recommending a store. The API returns the same 30
-    comments whatever the page, so there is no paging.
+    Use as a quality check before recommending a store. No paging: the API returns the same 30 comments.
     """
     body = await fetch(
         f"{MARKET_BASE}/mobile/v1/restaurant/vendor-comment", {"vendorCode": vendor_code}, common=MARKET_PARAMS
@@ -367,7 +362,7 @@ async def market_reviews(vendor_code: VendorCode) -> dict[str, Any]:
             {
                 "date": c.get("createdDate"),
                 "rating": _rating(c.get("rating")),
-                "text": c.get("commentText"),
+                "text": clip(c.get("commentText"), full_text),
                 "feeling": c.get("feeling"),
             }
             for c in data.get("comments") or []
@@ -418,13 +413,18 @@ async def _fetch_auth(url: str, params: dict[str, Any]) -> Any:
     """GET with the anonymous token, fetching it on first use and once more on 401."""
     global _token
     if _token is None:
-        _token = await _new_token()
+        async with auth_lock():  # concurrent first calls share one token
+            if _token is None:
+                _token = await _new_token()
+    stale = _token
     try:
-        return await fetch(url, params, common=MARKET_PARAMS, headers={"Authorization": f"Bearer {_token}"})
+        return await fetch(url, params, common=MARKET_PARAMS, headers={"Authorization": f"Bearer {stale}"})
     except ApiError as e:
         if e.status != 401:
             raise
-    _token = await _new_token()
+    async with auth_lock():
+        if _token == stale:  # another caller may have refreshed it already
+            _token = await _new_token()
     return await fetch(url, params, common=MARKET_PARAMS, headers={"Authorization": f"Bearer {_token}"})
 
 

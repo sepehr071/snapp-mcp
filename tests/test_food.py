@@ -150,7 +150,7 @@ async def test_food_restaurants(client, api):
         "discount_pct": 25,
         "best_coupon": "ارسال رایگان و 5% تخفیف ویژه کاربران PRO",
     }
-    assert rows[0]["best_coupon"] is None
+    assert "best_coupon" not in rows[0]  # null fields are omitted
     sent = api.calls[0].url.params
     assert json.loads(sent["filters"]) == {
         "filters": ["delivery_fee_until_0", "has_discount"],
@@ -243,7 +243,6 @@ async def test_food_reviews(client, api):
         "rating": 5.0,
         "text": "واقعا عالی بود مچکرم",
         "ordered": ["سالاد سزار گریل", "آب معدنی کوچک"],
-        "reply": None,
     }
     assert out["reviews"][2]["reply"]
     assert api.calls[0].url.params["page"] == "1"

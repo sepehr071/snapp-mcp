@@ -14,3 +14,8 @@ def tool(title: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         return fn
 
     return register
+
+
+def clip(text: str | None, full: bool = False, n: int = 400) -> str | None:
+    """Cap user-generated text so reviews and descriptions stay small (`full` skips the cap)."""
+    return text if full or text is None or len(text) <= n else text[:n] + "...[cut]"

@@ -7,7 +7,10 @@ and turns HTTP failures into `ToolError` messages the model can act on.
 from __future__ import annotations
 
 import asyncio
+import copy
+import json as json_lib
 import os
+import time
 from typing import Any
 
 import httpx
@@ -26,10 +29,18 @@ HEADERS = {
 }
 
 MAX_CONCURRENCY = 4
+CACHE_TTL = 60  # seconds; menus and prices must stay fresh
+CACHE_MAX = 64
+RETRY_STATUS = {502, 503, 504}
+RETRY_DELAY = 0.5  # seconds, fixed
+MAX_BODY = 5_000_000  # bytes; larger responses are refused
+HOSTS = {"snappfood.ir", "apigw.snappfood.ir", "svc.snapp.market"}
 
 _transport: httpx.AsyncBaseTransport | None = None
 _client: httpx.AsyncClient | None = None
 _limit: asyncio.Semaphore | None = None
+_auth_lock: asyncio.Lock | None = None
+_cache: dict[tuple, tuple[float, Any]] = {}
 
 
 class ApiError(ToolError):
@@ -42,26 +53,35 @@ class ApiError(ToolError):
 
 def set_transport(transport: httpx.AsyncBaseTransport | None) -> None:
     """Swap the transport (tests use httpx.MockTransport). Drops the current client."""
-    global _transport, _client, _limit
-    _transport, _client, _limit = transport, None, None
+    global _transport, _client, _limit, _auth_lock
+    _transport, _client, _limit, _auth_lock = transport, None, None, None
+    _cache.clear()
 
 
 def _get_client() -> tuple[httpx.AsyncClient, asyncio.Semaphore]:
-    global _client, _limit
+    global _client, _limit, _auth_lock
     if _client is None:
         # Snappfood's firewall blocks most non-Iranian exits, so ignore system proxy
         # settings unless the user opts in with SNAPP_MCP_PROXY.
         _client = httpx.AsyncClient(
             transport=_transport,
             headers=HEADERS,
-            timeout=20,
-            follow_redirects=True,
+            timeout=httpx.Timeout(20, connect=5),
+            follow_redirects=False,
             trust_env=False,
             proxy=os.environ.get("SNAPP_MCP_PROXY") or None,
         )
         _limit = asyncio.Semaphore(MAX_CONCURRENCY)
+        _auth_lock = asyncio.Lock()
     assert _limit is not None
     return _client, _limit
+
+
+def auth_lock() -> asyncio.Lock:
+    """Serializes the anonymous-token refresh so concurrent first calls fetch one token."""
+    _get_client()
+    assert _auth_lock is not None
+    return _auth_lock
 
 
 async def fetch(
@@ -81,29 +101,58 @@ async def fetch(
     client, limit = _get_client()
     query = {**(common or {}), **(params or {})}
     host = httpx.URL(url).host
-    try:
-        async with limit:
-            r = await client.request(method, url, params=query, headers=headers, json=json)
-    except httpx.TimeoutException as e:
-        raise ApiError(f"{host} did not answer in time. Try again in a moment.") from e
-    except httpx.RequestError as e:
-        raise ApiError(
-            f"Could not reach {host} ({type(e).__name__}). Check the internet connection; "
-            "Snappfood only serves Iranian IP addresses."
-        ) from e
+    if host not in HOSTS:
+        raise ApiError(f"Refusing to call unexpected host {host}.")
+    key = (url, tuple(sorted(query.items())), (headers or {}).get("Authorization"))
+    if method == "GET" and (hit := _cache.get(key)) and time.monotonic() - hit[0] < CACHE_TTL:
+        return copy.deepcopy(hit[1])
+    for attempt in (0, 1):  # GETs retry once on timeout/502/503/504; POST never
+        last = attempt == 1 or method != "GET"
+        try:
+            async with limit:
+                async with client.stream(method, url, params=query, headers=headers, json=json) as r:
+                    content = await _read_capped(r, host)
+        except httpx.TimeoutException as e:
+            if not last:
+                await asyncio.sleep(RETRY_DELAY)
+                continue
+            raise ApiError(f"{host} did not answer in time. Try again in a moment.") from e
+        except httpx.RequestError as e:
+            raise ApiError(
+                f"Could not reach {host} ({type(e).__name__}). Check the internet connection; "
+                "Snappfood only serves Iranian IP addresses."
+            ) from e
+        if r.status_code in RETRY_STATUS and not last:
+            await asyncio.sleep(RETRY_DELAY)
+            continue
+        break
 
     if r.status_code >= 400:
-        raise ApiError(_status_message(r, host), r.status_code)
+        raise ApiError(_status_message(r, content, host), r.status_code)
     try:
-        body = r.json()
+        body = json_lib.loads(content)
     except ValueError as e:
         raise ApiError(f"{host} returned a non-JSON response (HTTP {r.status_code}).", r.status_code) from e
     if isinstance(body, dict) and body.get("status") is False:
         raise ApiError(f"{host} rejected the request: {_error_text(body)}", r.status_code)
+    if method == "GET":
+        if len(_cache) >= CACHE_MAX:
+            _cache.pop(next(iter(_cache)))
+        _cache[key] = (time.monotonic(), copy.deepcopy(body))
     return body
 
 
-def _status_message(r: httpx.Response, host: str) -> str:
+async def _read_capped(r: httpx.Response, host: str) -> bytes:
+    """Read the body, refusing anything over MAX_BODY so one huge answer cannot flood memory or context."""
+    buf = bytearray()
+    async for chunk in r.aiter_bytes():
+        buf += chunk
+        if len(buf) > MAX_BODY:
+            raise ApiError(f"{host} sent a response over {MAX_BODY // 1_000_000} MB; refused.")
+    return bytes(buf)
+
+
+def _status_message(r: httpx.Response, content: bytes, host: str) -> str:
     code = r.status_code
     if code == 403:
         return (
@@ -117,9 +166,9 @@ def _status_message(r: httpx.Response, host: str) -> str:
     if code >= 500:
         return f"{host} had a server error (HTTP {code}). Try again later."
     try:
-        detail = _error_text(r.json())
+        detail = _error_text(json_lib.loads(content))
     except ValueError:
-        detail = r.text[:200]
+        detail = content[:200].decode("utf-8", "replace")
     return f"{host} rejected the request (HTTP {code}): {detail}"
 
 

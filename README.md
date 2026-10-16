@@ -35,7 +35,7 @@ compare real prices across hundreds of restaurants and stores, read menus and re
   Typical sequence: `find_location` -> `food_find_cheapest` -> `food_order_costs` (groceries: `market_find_cheapest` -> `market_store_info`).
 - **Use when:** comparing the real total (food + packaging + delivery) of dishes or groceries near an address in Iran.
 - **Do not use when:** the user wants to order, or is outside Iran with no Iranian IP or proxy (Snappfood answers HTTP 403).
-- **Output:** compact JSON. Prices in Toman, ratings 0-5 (`null` = not rated). Restaurant and store `vendor_code` values pass between tools. FoodParty and Gem deals only run in time windows.
+- **Output:** compact JSON. Prices in Toman, ratings 0-5. Null and empty fields are omitted (a missing `rating` = not rated); review and description texts are cut to 400 characters (pass `full_text: true` to `food_reviews`, `market_reviews` or `market_product` for the whole text). Restaurant and store `vendor_code` values pass between tools. FoodParty and Gem deals only run in time windows.
 - **Machine-readable:** [`server.json`](https://github.com/sepehr071/snapp-mcp/blob/main/server.json) and the
   [awesome-iran-mcp catalog](https://github.com/sepehr071/awesome-iran-mcp) (`TOOLS.md`, `servers.json`, `llms.txt`).
 
@@ -197,7 +197,7 @@ All 21 tools are annotated `readOnlyHint: true` and return compact structured JS
 
 ## Good to know
 
-- **Prices are in Toman** (1 Toman = 10 Rial). Ratings are normalized to **0–5**, like the apps; `null` means not rated yet.
+- **Prices are in Toman** (1 Toman = 10 Rial). Ratings are normalized to **0–5**, like the apps; a missing `rating` means not rated yet (null/empty fields are omitted).
 - **True cost of a food order** = price − discount + packaging + delivery − coupon, and the basket must reach the restaurant's minimum order. `food_find_cheapest` and `food_order_costs` give the agent every piece of that.
 - **Persian queries match best** (`پیتزا`, `کباب`, `شیر`). Name filters treat Arabic ي/ك and half-space vs space as equal.
 

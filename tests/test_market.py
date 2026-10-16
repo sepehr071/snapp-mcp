@@ -15,7 +15,7 @@ async def test_market_search(client, api):
     result = await client.call_tool("market_search", {"query": "شیر", **LOC, "limit": 5})
     stores = result.structured_content["stores"]
     assert [s["code"] for s in stores] == ["09egly", "0gkdjr", "0gknr2"]
-    assert stores[2]["rating"] == 4.1 and stores[0]["rating"] is None
+    assert stores[2]["rating"] == 4.1 and "rating" not in stores[0]
     assert stores[1]["products"][2] == {
         "id": 4088053,
         "title": "شیر کم چرب روزانه 200 میلی لیتری",
@@ -159,6 +159,16 @@ async def test_market_reviews(client, api):
     data = (await client.call_tool("market_reviews", {"vendor_code": "32xxwe"})).structured_content
     assert data["count"] == 6723
     assert [c["rating"] for c in data["comments"]] == [1, 5]
+
+
+async def test_market_reviews_full_text(client, api):
+    body = fixture("market_reviews.json")
+    body["data"]["comments"][0]["commentText"] = "x" * 500
+    api["/mobile/v1/restaurant/vendor-comment"] = body
+    clipped = (await client.call_tool("market_reviews", {"vendor_code": "32xxwe"})).structured_content
+    full = (await client.call_tool("market_reviews", {"vendor_code": "32xxwe", "full_text": True})).structured_content
+    assert clipped["comments"][0]["text"].endswith("...[cut]")
+    assert full["comments"][0]["text"] == "x" * 500
 
 
 async def test_bad_vendor_code_rejected(client, api):

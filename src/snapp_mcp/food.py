@@ -10,16 +10,16 @@ from pydantic import Field
 
 from .http import FOOD_APIGW, FOOD_BASE, FOOD_PARAMS, ApiError, fetch
 from .location import Lat, Long
-from .registry import tool
+from .registry import clip, tool
 
 VendorCode = Annotated[
     str,
     Field(
         pattern=r"^[A-Za-z0-9]{3,12}$",
-        description="Snappfood vendor code, e.g. '947evd' (from food_search / food_restaurants).",
+        description="Vendor code, e.g. '947evd' (from food_search / food_restaurants).",
     ),
 ]
-Query = Annotated[str, Field(min_length=2, description="Dish or food word, Persian works best, e.g. 'پیتزا', 'کباب'.")]
+Query = Annotated[str, Field(min_length=2, description="Dish word, e.g. 'پیتزا'.")]
 
 PAGE_SIZE = 20
 FOOD_PARTY_LIST = 23  # main FoodParty deal list; 56 is the protein one
@@ -35,16 +35,15 @@ async def food_search(
         Literal["relevance", "cheapest", "biggest_discount"], Field(description="Order of the results.")
     ] = "relevance",
     include_protein: Annotated[
-        bool, Field(description="Also search protein stores (butchers, poultry, eggs), which are hidden by default.")
+        bool, Field(description="Also search protein stores (butchers, eggs), hidden by default.")
     ] = False,
-    limit: Annotated[int, Field(ge=1, le=50, description="Max dishes to return.")] = 20,
+    limit: Annotated[int, Field(ge=1, le=50, description="Max dishes.")] = 10,
 ) -> dict[str, Any]:
     """Search dishes by name near a delivery point, with price, discount and restaurant.
 
-    Use for "find X near me" or "discounted X". With sort=relevance it is one fast call
-    on the search index; cheapest / biggest_discount also drop side items (sauces,
-    drinks, extras) and confirm prices against the live menus. For the cheapest X across
-    many restaurant menus use food_find_cheapest.
+    Use for "find X near me" or "discounted X". relevance is one fast index call; cheapest /
+    biggest_discount drop side items and confirm prices on live menus. For the cheapest X
+    across many menus use food_find_cheapest.
     """
     # Sorting a short relevance page would miss cheaper matches, so fetch a wider pool first.
     size = limit if sort == "relevance" else 100
@@ -101,15 +100,14 @@ async def food_find_cheapest(
     lat: Lat,
     long: Long,
     max_restaurants: Annotated[
-        int, Field(ge=1, le=60, description="How many open restaurants' menus to scan (more = slower, more complete).")
+        int, Field(ge=1, le=60, description="Open restaurants' menus to scan (more = slower).")
     ] = 30,
-    limit: Annotated[int, Field(ge=1, le=50, description="Max dishes to return.")] = 20,
+    limit: Annotated[int, Field(ge=1, le=50, description="Max dishes.")] = 10,
 ) -> dict[str, Any]:
     """Find the cheapest way to get a dish: scans menus of nearby open restaurants plus FoodParty deals.
 
-    Use when the user wants the lowest total price for X. Ranks by total =
-    food price after discount + packaging + delivery fee; check min_order, since a cheap
-    dish may not reach the restaurant's minimum basket. Slower than food_search.
+    Use for the lowest total price of X. Ranks by food price after discount + packaging +
+    delivery fee; check min_order, a cheap dish may not reach the minimum basket. Slower than food_search.
     """
     loc, q = {"lat": lat, "long": long}, query.strip()
     open_vendors = [v for v in await _vendor_list(loc) if v.get("is_open") and v.get("deliver")]
@@ -148,21 +146,20 @@ async def food_find_cheapest(
 async def food_restaurants(
     lat: Lat,
     long: Long,
-    query: Annotated[str | None, Field(description="Filter by restaurant name, e.g. 'پیتزا' or a brand name.")] = None,
-    free_delivery: Annotated[bool, Field(description="Only restaurants with free delivery.")] = False,
-    has_discount: Annotated[bool, Field(description="Only restaurants running a discount.")] = False,
-    has_coupon: Annotated[bool, Field(description="Only restaurants offering a coupon.")] = False,
+    query: Annotated[str | None, Field(description="Restaurant name filter, e.g. 'پیتزا'.")] = None,
+    free_delivery: Annotated[bool, Field(description="Free delivery only.")] = False,
+    has_discount: Annotated[bool, Field(description="Discounted only.")] = False,
+    has_coupon: Annotated[bool, Field(description="With a coupon only.")] = False,
     sort: Annotated[
         Literal["default", "max_rate", "nearest", "least_expensive", "most_expensive", "top_performance"],
-        Field(description="Order; least_expensive/most_expensive rank by price class, not delivery fee."),
+        Field(description="Order; *_expensive rank by price class, not delivery fee."),
     ] = "default",
-    page: Annotated[int, Field(ge=0, le=50, description="Zero-based page of 20 restaurants.")] = 0,
-    open_only: Annotated[bool, Field(description="Hide restaurants that are closed or don't deliver here.")] = True,
+    page: Annotated[int, Field(ge=0, le=50, description="Page of 20, from 0.")] = 0,
+    open_only: Annotated[bool, Field(description="Hide closed or non-delivering restaurants.")] = True,
 ) -> dict[str, Any]:
     """List restaurants delivering to a point, with rating, delivery fee, ETA and coupon info.
 
-    Use to browse or rank restaurants (best rated, free delivery, with discount) or to
-    find a restaurant's vendor code by name. No dish prices: use food_menu for those.
+    Use to browse or rank restaurants or to find a vendor code by name. No dish prices: use food_menu.
     """
     filters: dict[str, list[str]] = {"filters": []}
     if free_delivery:
@@ -208,13 +205,12 @@ async def food_menu(
     vendor_code: VendorCode,
     lat: Lat,
     long: Long,
-    query: Annotated[str | None, Field(description="Only items whose title contains this text.")] = None,
-    limit: Annotated[int, Field(ge=1, le=300, description="Max items to return.")] = 100,
+    query: Annotated[str | None, Field(description="Only items whose title contains this.")] = None,
+    limit: Annotated[int, Field(ge=1, le=300, description="Max items.")] = 30,
 ) -> dict[str, Any]:
     """Get one restaurant's menu: every item with price, discount, packaging fee and availability.
 
-    Use after picking a restaurant (vendor code from food_search / food_restaurants).
-    final_price = price - discount; packaging is added per item at checkout.
+    Use after picking a restaurant. final_price = price - discount; packaging is added per item at checkout.
     """
     data = (await _menu(vendor_code, {"lat": lat, "long": long}))["data"]
     v = data["vendor"]
@@ -252,9 +248,8 @@ async def food_menu(
 async def food_order_costs(vendor_code: VendorCode, lat: Lat, long: Long) -> dict[str, Any]:
     """Get the extra costs and conditions of ordering from one restaurant.
 
-    Use before recommending a restaurant: delivery fee and ETA here, minimum order,
-    and coupons (each with the basket total it needs and whether it is first-order only).
-    Per-item packaging fees are in food_menu.
+    Use before recommending a restaurant: delivery fee, ETA, minimum order and coupons (with the
+    basket total each needs and whether it is first-order only). Packaging is per item in food_menu.
     """
     loc = {"lat": lat, "long": long}
     state, rules, rewards = await asyncio.gather(
@@ -315,11 +310,14 @@ async def food_order_costs(vendor_code: VendorCode, lat: Lat, long: Long) -> dic
 @tool("Restaurant reviews")
 async def food_reviews(
     vendor_code: VendorCode,
-    page: Annotated[int, Field(ge=0, le=100, description="Zero-based page of 10 reviews, newest first.")] = 0,
+    page: Annotated[int, Field(ge=0, le=100, description="Page of 10, newest first, from 0.")] = 0,
+    full_text: Annotated[
+        bool, Field(description="Return review and reply text uncut (default cut to 400 chars).")
+    ] = False,
 ) -> dict[str, Any]:
     """Read recent customer reviews of a restaurant (rating, text, what they ordered, vendor reply).
 
-    Use to judge quality, delays or packaging before recommending a restaurant.
+    Use to judge quality, delays or packaging before recommending.
     """
     data = (
         await fetch(
@@ -335,9 +333,9 @@ async def food_reviews(
             {
                 "date": c.get("createdDate"),
                 "rating": _stars(c.get("rate")),
-                "text": c.get("commentText") or None,
+                "text": clip(c.get("commentText") or None, full_text),
                 "ordered": [f["title"] for f in c.get("foods") or []],
-                "reply": (c.get("replies") or [{}])[0].get("commentText"),
+                "reply": clip((c.get("replies") or [{}])[0].get("commentText"), full_text),
             }
             for c in data["comments"]
         ],
@@ -348,16 +346,15 @@ async def food_reviews(
 async def food_party_deals(
     lat: Lat,
     long: Long,
-    query: Annotated[str | None, Field(description="Only deals whose dish title contains this text.")] = None,
+    query: Annotated[str | None, Field(description="Only deals whose title contains this.")] = None,
     sort: Annotated[
         Literal["cheapest", "biggest_discount"], Field(description="Order of the deals.")
     ] = "biggest_discount",
-    limit: Annotated[int, Field(ge=1, le=100, description="Max deals to return.")] = 30,
+    limit: Annotated[int, Field(ge=1, le=100, description="Max deals.")] = 15,
 ) -> dict[str, Any]:
     """List today's FoodParty flash deals (deep discounts, limited stock, time window) still in stock.
 
-    Use for "what's on a big discount right now". Deals run only inside the window
-    (starts/ends); outside it the list is empty.
+    Use for "what's on a big discount right now". Deals run only inside starts/ends; outside it the list is empty.
     """
     body = await _party({"lat": lat, "long": long})
     if body is None:
@@ -397,13 +394,12 @@ async def food_party_deals(
 async def food_meal_for_one(
     lat: Lat,
     long: Long,
-    max_price: Annotated[int | None, Field(ge=1, description="Only meals at or under this final price, Toman.")] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="Max meals to return.")] = 30,
+    max_price: Annotated[int | None, Field(ge=1, description="Max final price, Toman.")] = None,
+    limit: Annotated[int, Field(ge=1, le=100, description="Max meals.")] = 15,
 ) -> dict[str, Any]:
     """List single-person meals (at most 299k Toman, free delivery), cheapest first.
 
-    Use for "cheap meal for one". Check min_order: a cheap meal may not reach the
-    restaurant's minimum basket on its own.
+    Use for "cheap meal for one". Check min_order: a cheap meal may not reach the minimum basket.
     """
     data = (
         await fetch(
@@ -442,7 +438,7 @@ async def food_meal_for_one(
 async def food_discounted_vendors(lat: Lat, long: Long) -> dict[str, Any]:
     """List restaurants running a discount now, plus the short "Gem" hunt discount if one is live.
 
-    Use for "which restaurants have offers". Vendor-level only; open food_menu for prices.
+    Use for "which restaurants have offers". Vendor-level only: food_menu has prices.
     """
     loc = {"lat": lat, "long": long, "page": 0, "page_size": 100}
     off, session = await asyncio.gather(

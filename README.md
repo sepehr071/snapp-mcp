@@ -143,7 +143,8 @@ Then just ask:
       └──────▶  snapp.market    groceries
 ```
 
-`snapp-mcp` runs locally and calls the same public endpoints the Snappfood and SnappMarket web apps use.
+`snapp-mcp` runs locally and calls the same public endpoints the Snappfood and SnappMarket web apps use,
+with a Chrome-like TLS and header profile, at most 2 requests at a time and small random delays.
 There's no hosted server in between, no API key, and nothing about you is sent anywhere else.
 
 ## Tools
@@ -228,7 +229,7 @@ and is free under the MIT license. Outside Iran, Snappfood blocks most IPs, so u
 <summary><b>I get "blocked the request (HTTP 403)"</b></summary>
 
 Snappfood's firewall only accepts Iranian IP addresses. Run the server on a machine in Iran with the VPN off.
-If you must use a VPN, set `SNAPP_MCP_PROXY` to an HTTP proxy that exits in Iran. Normal system proxy variables
+If you must use a VPN, set `SNAPP_MCP_PROXY` to an HTTP proxy that exits in Iran (several, comma-separated, are fine). Normal system proxy variables
 are ignored on purpose, because a foreign VPN exit would get blocked. SnappMarket is less strict.
 </details>
 
@@ -263,7 +264,9 @@ npx @modelcontextprotocol/inspector uvx snapp-mcp
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `SNAPP_MCP_PROXY` | unset | HTTP proxy for every request, e.g. `http://user:pass@host:port` |
+| `SNAPP_MCP_PROXY` | unset | HTTP proxy for every request, e.g. `http://user:pass@host:port`. A comma-separated list is used one at a time: the next proxy takes over when one is blocked (403/429) or cannot connect |
+
+If Snapp answers with a bot-check page, the server can solve it with a headless browser: install `snapp-mcp[browser]` (e.g. `uvx --from 'snapp-mcp[browser]' snapp-mcp`), then run `patchright install chromium`. Off by default.
 
 <a id="فارسی"></a>
 
@@ -299,8 +302,8 @@ claude mcp add snapp -- uvx snapp-mcp
 ```bash
 git clone https://github.com/sepehr071/snapp-mcp && cd snapp-mcp
 uv sync
-uv run pytest            # offline, against recorded responses
-uv run pytest -m live    # real APIs (needs an Iranian IP)
+uv run python -m pytest            # offline, against recorded responses
+uv run python -m pytest -m live    # real APIs (needs an Iranian IP)
 uv run ruff check .
 ```
 

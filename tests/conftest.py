@@ -21,8 +21,10 @@ def anyio_backend():
 
 
 @pytest.fixture(autouse=True)
-def fresh_http_client():
+def fresh_http_client(monkeypatch):
     """The shared httpx client is bound to one event loop; each test gets a new loop."""
+    monkeypatch.setattr(http, "RETRY_DELAY", 0)
+    monkeypatch.setattr(http, "JITTER", (0, 0))
     http.set_transport(None)
     yield
     http.set_transport(None)

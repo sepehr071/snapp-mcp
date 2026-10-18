@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 import httpx
 import pytest
@@ -84,3 +85,118 @@ async def test_tool_result_is_one_text_block_and_no_output_schema(api):
     assert "title" not in str(tools[0].input_schema.get("properties"))
     assert len(result.content) == 1 and isinstance(result.content[0], TextContent)
     assert result.structured_content is None
+
+
+def test_is_challenge():
+    html = {"content-type": "text/html"}
+    page = b"<html>Just a moment...</html>"
+    assert http._is_challenge(httpx.Response(403, headers=html), page)
+    assert http._is_challenge(httpx.Response(503), b"<!doctype html><title>ArvanCloud</title>")
+    assert not http._is_challenge(httpx.Response(403), b"<html>Access Denied</html>")
+    assert not http._is_challenge(httpx.Response(403, headers={"content-type": "application/json"}), b'{"a": 1}')
+    assert not http._is_challenge(httpx.Response(200, headers=html), page)
+
+
+@pytest.mark.anyio
+async def test_frontend_headers_per_host(api):
+    api["/a"] = {"ok": 1}
+    await http.fetch("https://snappfood.ir/a")
+    await http.fetch("https://apigw.snappfood.ir/a")
+    await http.fetch("https://svc.snapp.market/a")
+    await http.fetch("https://svc.snapp.market/a", method="POST", json={})
+    food, gw, market_get, market_post = (c.headers for c in api.calls)
+    assert food["Referer"] == "https://snappfood.ir/" and "Origin" not in food
+    assert food["sec-fetch-site"] == "same-origin"
+    assert (gw["Origin"], gw["sec-fetch-site"]) == ("https://snappfood.ir", "same-site")
+    assert (market_get["Origin"], market_get["Referer"]) == ("https://snapp.market", "https://snapp.market/")
+    assert market_post["Origin"] == "https://snapp.market"
+    assert "User-Agent" not in food or "Chrome/154" not in food["User-Agent"]
+
+
+@pytest.mark.anyio
+async def test_retries_up_to_twice_but_never_after_403(api):
+    api["/e"] = lambda request: httpx.Response(429, json={"a": 1})
+    with pytest.raises(http.ApiError, match="rate limiting"):
+        await http.fetch("https://snappfood.ir/e")
+    assert len(api.calls) == 3
+    api["/f"] = lambda request: httpx.Response(403, json={"a": 1})
+    with pytest.raises(http.ApiError, match="blocked"):
+        await http.fetch("https://snappfood.ir/f")
+    assert sum(c.url.path == "/f" for c in api.calls) == 1
+
+
+@pytest.mark.anyio
+async def test_retry_after_is_honoured_and_capped(api, monkeypatch):
+    waits = []
+
+    async def fake_sleep(s):
+        waits.append(s)
+
+    monkeypatch.setattr(http.asyncio, "sleep", fake_sleep)
+    hits = iter(
+        [httpx.Response(429, headers={"Retry-After": "3"}), httpx.Response(503, headers={"Retry-After": "999"})]
+    )
+    api["/r"] = lambda request: next(hits, httpx.Response(200, json={"a": 1}))
+    assert await http.fetch("https://snappfood.ir/r") == {"a": 1}
+    assert [w for w in waits if w] == [3, http.MAX_RETRY_WAIT]
+
+
+@pytest.mark.anyio
+async def test_proxy_list_rotates_on_connect_error(monkeypatch, api):
+    monkeypatch.setenv("SNAPP_MCP_PROXY", "http://p1:1, http://p2:2")
+    assert http._proxies() == ["http://p1:1", "http://p2:2"]
+
+    def boom(request):
+        raise httpx.ConnectError("down", request=request)
+
+    api["/c"] = boom
+    http._get_client()
+    with pytest.raises(http.ApiError):
+        await http.fetch("https://snappfood.ir/c")
+    assert http._proxy_index >= 1 and len(api.calls) == 3  # retried; later attempts ran on the next proxy
+    old, _ = http._get_client()
+    index = http._proxy_index
+    http._next_proxy(object())  # a late failure on a retired client must not skip the proxy in use
+    assert http._proxy_index == index and http._client is old
+
+
+@pytest.mark.anyio
+async def test_challenge_cleared_by_browser_once(monkeypatch, api):
+    runs = []
+
+    async def fake_browser(site, proxy):
+        runs.append(site)
+        await asyncio.sleep(0.01)
+        return [{"name": "clearance", "value": "ok", "domain": ".snappfood.ir", "path": "/"}]
+
+    monkeypatch.setattr(http, "_browser_cookies", fake_browser)
+    blocked = httpx.Response(403, text="<html>Just a moment</html>", headers={"content-type": "text/html"})
+
+    def guarded(request):
+        return httpx.Response(200, json={"a": 1}) if "clearance=ok" in request.headers.get("cookie", "") else blocked
+
+    api["/g"] = guarded
+    await asyncio.gather(http.fetch("https://snappfood.ir/g", {"a": 1}), http.fetch("https://snappfood.ir/g", {"a": 2}))
+    assert runs == ["https://snappfood.ir"]  # the second caller reused the cookies the first one fetched
+
+    api["/h"] = lambda request: httpx.Response(403, text="<html>Just a moment</html>")
+    with pytest.raises(http.ApiError) as e:  # still blocked after the one retry: final
+        await http.fetch("https://snappfood.ir/h")
+    assert e.value.status == 403 and sum(c.url.path == "/h" for c in api.calls) == 2
+
+
+@pytest.mark.anyio
+async def test_challenge_without_patchright(monkeypatch, api):
+    monkeypatch.setitem(sys.modules, "patchright.async_api", None)  # makes the import fail
+    api["/p"] = lambda request: httpx.Response(403, text="<html>Just a moment</html>")
+    with pytest.raises(http.ApiError, match=r"snapp-mcp\[browser\].*patchright install chromium"):
+        await http.fetch("https://snappfood.ir/p")
+
+
+@pytest.mark.anyio
+async def test_default_transport_ignores_env_proxy(monkeypatch):
+    from curl_cffi.const import CurlOpt
+
+    monkeypatch.setenv("HTTPS_PROXY", "http://env-proxy:1")
+    client, _ = http._get_client()
+    assert client._transport._session.curl_options[CurlOpt.NOPROXY] == "*"

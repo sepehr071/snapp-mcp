@@ -8,13 +8,13 @@
     "source": "github"
   },
   "websiteUrl": "https://github.com/sepehr071/snapp-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "snapp-mcp",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -22,7 +22,7 @@
       "environmentVariables": [
         {
           "name": "SNAPP_MCP_PROXY",
-          "description": "Optional HTTP proxy URL. Snappfood only accepts Iranian IP addresses; system proxy settings are ignored.",
+          "description": "Optional HTTP proxy URL. Snappfood only accepts Iranian IP addresses; system proxy settings are ignored. Also accepts a comma-separated list: one is used until it gets blocked or fails to connect, then the next.",
           "isRequired": false,
           "isSecret": false
         }

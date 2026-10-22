@@ -1,13 +1,13 @@
 [project]
 name = "snapp-mcp"
-version = "0.3.0"
+version = "0.3.1"
 description = "Unofficial read-only MCP server for Snappfood and SnappMarket: search food and groceries, compare prices, find deals."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Sepehr Radmard", email = "sepehrr80@gmail.com" }]
 requires-python = ">=3.10"
-keywords = ["mcp", "model-context-protocol", "snappfood", "snappmarket", "iran", "food-delivery", "grocery"]
+keywords = ["mcp", "mcp-server", "model-context-protocol", "snappfood", "snappmarket", "snapp", "iran", "persian", "food-delivery", "grocery", "restaurant", "price-comparison", "ai-agents", "farsi"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

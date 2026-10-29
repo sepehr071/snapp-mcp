@@ -15,6 +15,7 @@ search dishes and groceries, compare real prices across hundreds of restaurants 
 [![CI](https://github.com/sepehr071/snapp-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sepehr071/snapp-mcp/actions/workflows/ci.yml)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.sepehr071%2Fsnapp--mcp-7c3aed)](https://registry.modelcontextprotocol.io/?q=snapp-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](https://github.com/sepehr071/snapp-mcp/blob/main/LICENSE)
+[![mcpfarsi](https://mcpfarsi.ir/badge/snapp.svg)](https://mcpfarsi.ir/servers/snapp/)
 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=snapp&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJzbmFwcC1tY3AiXX0=)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_snapp--mcp-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=snapp&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22snapp-mcp%22%5D%7D)
@@ -386,6 +387,7 @@ publishes to PyPI and the [MCP Registry](https://registry.modelcontextprotocol.i
 - [tapsifood-mcp](https://github.com/sepehr071/tapsifood-mcp): food delivery search and menus on another Iranian platform
 - [digikala-mcp](https://github.com/sepehr071/digikala-mcp): Digikala product search and prices
 - [torob-mcp](https://github.com/sepehr071/torob-mcp): price comparison across Iranian shops
+- Listed on [mcpfarsi.ir](https://mcpfarsi.ir/servers/snapp/), the Persian MCP marketplace
 
 ## Disclaimer
 

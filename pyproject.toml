@@ -33,6 +33,7 @@ browser = ["patchright==1.63.0"]
 [project.urls]
 Homepage = "https://github.com/sepehr071/snapp-mcp"
 Issues = "https://github.com/sepehr071/snapp-mcp/issues"
+Website = "https://mcpfarsi.ir/servers/snapp/"
 
 [project.scripts]
 snapp-mcp = "snapp_mcp.server:main"

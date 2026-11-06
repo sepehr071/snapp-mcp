@@ -19,7 +19,6 @@ async def test_food_search(client, api):
         "id": 21543750,
         "title": "پیتزا تورینو ",
         "price": 834000,
-        "discount_pct": 0,
         "final_price": 834000,
         "rating": 3.5,
         "vendor_code": "09o21d",
@@ -90,7 +89,7 @@ async def test_food_search_cheapest_uses_live_menu_prices(client, api):
     api["/mobile/v2/restaurant/details/dynamic"] = lambda r: httpx.Response(200, json=menus[r.url.params["vendorCode"]])
     result = await client.call_tool("food_search", {"query": "پیتزا", **SHIRAZ, "sort": "cheapest"})
     dishes = result.structured_content["dishes"]
-    assert [(d["id"], d["final_price"], d["discount_pct"]) for d in dishes] == [(3, 335300, 30), (1, 438000, 0)]
+    assert [(d["id"], d["final_price"], d.get("discount_pct", 0)) for d in dishes] == [(3, 335300, 30), (1, 438000, 0)]
 
 
 async def test_food_search_protein_makes_second_call(client, api):
@@ -121,7 +120,7 @@ async def test_food_find_cheapest(client, api):
     first = out["dishes"][0]
     assert first["title"] == "مینی پیتزا پپرونی" and first["total"] == 416500 and first["source"] == "food_party"
     assert "p8gq62" not in {d["vendor_code"] for d in out["dishes"]}  # closed vendor's party deal dropped
-    menu_dish = next(d for d in out["dishes"] if d["source"] == "menu")
+    menu_dish = next(d for d in out["dishes"] if "source" not in d)
     assert (
         menu_dish["vendor_code"] == "p6mr7e"
         and menu_dish["total"] == 1208000 + 32000
@@ -196,9 +195,9 @@ async def test_food_menu(client, api):
         "discount_pct": 19,
         "final_price": 1000000,
         "packaging": 10000,
-        "available": True,
     }
     assert items[26639918]["available"] is False
+    assert "available" not in items[34224063]
     assert api.calls[0].url.params["vendorCode"] == "947evd"
 
     filtered = await client.call_tool("food_menu", {"vendor_code": "947evd", **SHIRAZ, "query": "رژیمی", "limit": 1})

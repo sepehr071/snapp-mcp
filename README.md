@@ -20,7 +20,7 @@ search dishes and groceries, compare real prices across hundreds of restaurants 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=snapp&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJzbmFwcC1tY3AiXX0=)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_snapp--mcp-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=snapp&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22snapp-mcp%22%5D%7D)
 
-[For AI agents](#for-ai-agents) · [Why](#why) · [What it can do](#what-it-can-do) · [Quick start](#quick-start) · [Tools](#tools) · [How it works](#how-it-works) · [Good to know](#good-to-know) · [FAQ](#faq) · [Configuration](#configuration) · [فارسی](#فارسی) · [Development](#development)
+[For AI agents](#for-ai-agents) · [Why](#why) · [What it can do](#what-it-can-do) · [Quick start](#quick-start) · [Tools](#tools) · [Good to know](#good-to-know) · [FAQ](#faq) · [Configuration](#configuration) · [فارسی](#فارسی) · [Development](#development)
 
 </div>
 
@@ -218,27 +218,6 @@ delivery point. The agent gets them from `find_location` or `list_cities` first.
 </details>
 
 All 21 tools are annotated `readOnlyHint: true` and return compact structured JSON, so they don't flood the agent's context.
-
-## How it works
-
-```text
-  AI agent  (Claude, Cursor, Copilot, ...)
-      │
-      │  MCP over stdio
-      ▼
-  snapp-mcp  (runs on your machine, uses your IP)
-      │
-      │  HTTPS
-      ├──────▶  snappfood.ir    restaurants
-      └──────▶  snapp.market    groceries
-```
-
-`snapp-mcp` runs locally and calls the same public endpoints the Snappfood and SnappMarket web apps use,
-with a Chrome-like TLS and header profile, at most 2 requests at a time and small random delays (150-600 ms).
-Identical GET requests are cached for 60 seconds, and failed GETs (timeout, network error, 5xx, 429) are retried up to twice with backoff.
-It only talks to a fixed allowlist of Snapp hosts and caps response bodies at 5 MB.
-The only POST it makes fetches SnappMarket's anonymous token (the public web-app client credentials), which the store and product endpoints need.
-There's no hosted server in between, no API key, and nothing about you is sent anywhere else.
 
 ## Good to know
 

@@ -47,6 +47,22 @@ async def test_market_find_cheapest_caps_pages(client, api):
     assert result.is_error and not api.calls
 
 
+async def test_market_find_cheapest_survives_page_failure(client, api):
+    def search(request):
+        if request.url.params["page"] == "1":
+            return httpx.Response(500)
+        return httpx.Response(200, json=fixture("market_search.json"))
+
+    api["/mobile/v3/search"] = search
+    result = await client.call_tool("market_find_cheapest", {"query": "شیر", **LOC, "pages": 2})
+    out = result.structured_content
+    assert out["offers"] and out["failed_pages"] == 1
+
+    api["/mobile/v3/search"] = lambda request: httpx.Response(500)
+    failed = await client.call_tool("market_find_cheapest", {"query": "ماست", **LOC, "pages": 1})  # new query: uncached
+    assert failed.is_error  # every page failed: the error surfaces instead of an empty answer
+
+
 async def test_market_stores(client, api):
     api["/express-vendor/general/vendors-list"] = fixture("market_stores.json")
     result = await client.call_tool("market_stores", {**LOC, "sort": "highest_rating"})

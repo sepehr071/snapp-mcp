@@ -351,3 +351,6 @@ def test_delivery_fee_and_side_items():
     assert _is_side("پیتزا", "سس مخصوص پیتزا") and not _is_side("سس", "سس پیتزا")
     assert _is_side("پیتزا", "پیتزا", "پیش\u200cغذا") and not _is_side("پیتزا", "پیتزا میکس", "پیتزا")
     assert _has("كباب", "چلو کباب") and _has("پیش غذا", "پیش\u200cغذا")
+    assert _has("آبگوشت", "ابگوشت علی")  # alef/hamza variants collapse
+    assert _has("مسجد أبو حنيفه", "مسجد ابو حنیفه")  # أ, ي
+    assert _has("کافه", "کافۀ")  # teh marbuta variants

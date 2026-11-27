@@ -58,9 +58,16 @@ async def market_find_cheapest(
 
     Scans open delivering stores; one flat list by final price. Check delivery_fee and min_order.
     """
-    results = await asyncio.gather(*(_search(query, lat, long, page, 12) for page in range(pages)))
+    results = await asyncio.gather(
+        *(_search(query, lat, long, page, 12) for page in range(pages)), return_exceptions=True
+    )
+    if all(isinstance(r, BaseException) for r in results):
+        raise next(r for r in results if isinstance(r, BaseException))
+    failed_pages = sum(isinstance(r, BaseException) for r in results)
     offers = []
     for data in results:
+        if isinstance(data, BaseException):
+            continue  # one failing page must not hide the stores the other pages found
         for v in data.get("items") or []:
             if not (v.get("is_open") and v.get("deliver") and v.get("does_deliver", True)):
                 continue
@@ -72,7 +79,10 @@ async def market_find_cheapest(
             }
             offers += [{**_product(p), **store} for p in v.get("products") or [] if (p.get("stock") or 0) > 0]
     offers.sort(key=lambda o: o["final_price"])
-    return {"offers": offers[:limit], "offers_found": len(offers)}
+    out: dict[str, Any] = {"offers": offers[:limit], "offers_found": len(offers)}
+    if failed_pages:
+        out["failed_pages"] = failed_pages
+    return out
 
 
 @tool("List grocery stores")

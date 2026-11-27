@@ -97,6 +97,19 @@ def test_is_challenge():
     assert not http._is_challenge(httpx.Response(200, headers=html), page)
 
 
+def test_proxy_opts():
+    assert http._proxy_opts(None) is None
+    assert http._proxy_opts("http://p1:1") == {"server": "http://p1:1"}
+    assert http._proxy_opts("http://p.example") == {"server": "http://p.example"}  # portless: no literal ":None"
+    assert http._proxy_opts("socks5://p.example:1080") == {"server": "socks5://p.example:1080"}
+    assert http._proxy_opts("http://user:pw@p.example:8080") == {
+        "server": "http://p.example:8080",
+        "username": "user",
+        "password": "pw",
+    }
+    assert http._proxy_opts("http://user@p.example:8080") == {"server": "http://p.example:8080", "username": "user"}
+
+
 @pytest.mark.anyio
 async def test_frontend_headers_per_host(api):
     api["/a"] = {"ok": 1}

@@ -614,8 +614,23 @@ async def _live_prices(dishes: list[dict[str, Any]], loc: dict[str, Any], query:
 SIDE_CATEGORIES = ("سس", "نوشیدنی", "دسر", "پیش غذا", "مخلفات", "افزودنی", "اضافه", "دورچین")
 SIDE_TITLES = ("سس", "خمیر", "نوشابه", "دوغ")
 
-# Arabic yeh/kaf and the zero-width non-joiner vary between typed queries and menu titles.
-_NORMALIZE = str.maketrans({"ي": "ی", "ك": "ک", "\u200c": " "})
+# Arabic yeh/kaf, alef/hamza and teh-marbuta variants, and the zero-width non-joiner vary between
+# typed queries and menu titles (the same normalization the site's own search applies).
+_NORMALIZE = str.maketrans(
+    {
+        "ي": "ی",
+        "ك": "ک",
+        "ٱ": "ا",
+        "أ": "ا",
+        "إ": "ا",
+        "آ": "ا",
+        "ة": "ه",
+        "ۀ": "ه",
+        "ؤ": "و",
+        "ئ": "ی",
+        "\u200c": " ",
+    }
+)
 
 
 def _norm(text: str) -> str:

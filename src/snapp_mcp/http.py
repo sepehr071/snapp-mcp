@@ -270,6 +270,19 @@ async def _request(method, url, query, headers, json, host) -> tuple[httpx.Respo
     return r, content
 
 
+def _proxy_opts(proxy: str | None) -> dict[str, str] | None:
+    """Patchright's proxy launch option; portless URLs default to their scheme's port, not a literal ":None"."""
+    if not proxy:
+        return None
+    u = httpx.URL(proxy)
+    opts = {"server": f"{u.scheme}://{u.host}:{u.port}" if u.port else f"{u.scheme}://{u.host}"}
+    if u.username:
+        opts["username"] = u.username
+    if u.password:
+        opts["password"] = u.password
+    return opts
+
+
 async def _browser_cookies(site: str, proxy: str | None) -> list[dict[str, Any]]:
     """Open the site's home page in headless patchright, wait for the challenge to clear, return the cookies."""
     try:
@@ -277,11 +290,10 @@ async def _browser_cookies(site: str, proxy: str | None) -> list[dict[str, Any]]
     except ImportError as e:
         raise ApiError(
             "Snappfood/SnappMarket served a bot-check page. Install the browser extra (`pip install snapp-mcp[browser]`, "
-            "or `uvx --with patchright==1.63.0 snapp-mcp`) and run `patchright install chromium`.",
+            "or `uvx --from 'snapp-mcp[browser]' snapp-mcp`) and run `patchright install chromium`.",
             403,
         ) from e
-    u = httpx.URL(proxy) if proxy else None
-    opts = u and {"server": f"{u.scheme}://{u.host}:{u.port}", "username": u.username, "password": u.password}
+    opts = _proxy_opts(proxy)
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True, proxy=opts)
         try:

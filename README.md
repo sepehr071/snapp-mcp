@@ -37,7 +37,7 @@ search dishes and groceries, compare real prices across hundreds of restaurants 
 - **Units:** prices in **Toman** (1 Toman = 10 Rial), ratings 0-5.
 - **Use when:** comparing the real total (food + packaging + delivery) of dishes or groceries near an address in Iran.
 - **Do not use when:** the user wants to order or pay, or is outside Iran with no Iranian IP or proxy (Snappfood answers HTTP 403).
-- **Output:** compact JSON. Null and empty fields are omitted (a missing `rating` = not rated); review and description texts are cut to 400 characters (pass `full_text: true` to `food_reviews`, `market_reviews` or `market_product` for the whole text). Restaurant and store `vendor_code` values pass between tools. FoodParty and Gem deals only run in time windows.
+- **Output:** compact JSON. Null and empty fields are omitted below the top level (a missing `rating` = not rated; top-level keys are always present); review and description texts are cut to 400 characters (pass `full_text: true` to `food_reviews`, `market_reviews` or `market_product` for the whole text). Restaurant and store `vendor_code` values pass between tools. FoodParty and Gem deals only run in time windows.
 - **Machine-readable:** [`server.json`](https://github.com/sepehr071/snapp-mcp/blob/main/server.json) and the
   [iran-mcp catalog](https://github.com/sepehr071/iran-mcp) (`TOOLS.md`, `servers.json`, `llms.txt`).
 
@@ -221,7 +221,7 @@ All 21 tools are annotated `readOnlyHint: true` and return compact structured JS
 
 ## Good to know
 
-- **Prices are in Toman** (1 Toman = 10 Rial). Ratings are normalized to **0–5** (the APIs use 0-10); a missing `rating` means not rated yet (null/empty fields are omitted).
+- **Prices are in Toman** (1 Toman = 10 Rial). Ratings are normalized to **0–5** (the APIs use 0-10); a missing `rating` means not rated yet (null/empty fields are omitted below the top level).
 - **True cost of a food order** = price − discount + packaging + delivery − coupon, and the basket must reach the restaurant's minimum order. `food_find_cheapest` and `food_order_costs` give the agent every piece of that.
 - **Prices are checked live.** Search-index prices go stale, so `food_search` price sorts and `food_find_cheapest` re-read live menus and drop dishes that are gone, unavailable or sides (sauce, drink, ...).
 - **Persian queries match best** (`پیتزا`, `کباب`, `شیر`). Name filters treat Arabic ي/ك and half-space vs space as equal.
